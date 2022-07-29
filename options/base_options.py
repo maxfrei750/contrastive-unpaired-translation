@@ -1,9 +1,10 @@
 import argparse
 import os
-from util import util
-import torch
-import models
+
 import data
+import models
+import torch
+from util import util
 
 
 class BaseOptions():
@@ -25,6 +26,7 @@ class BaseOptions():
         # basic parameters
         parser.add_argument('--dataroot', default='placeholder', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         parser.add_argument('--name', type=str, default='experiment_name', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--use_wandb', action='store_true', help='use wandb')
         parser.add_argument('--easy_label', type=str, default='experiment_name', help='Interpretable name')
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')

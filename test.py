@@ -34,6 +34,11 @@ from util.visualizer import save_images
 from util import html
 import util.util as util
 
+try:
+    import wandb
+except ImportError:
+    print('Warning: wandb package cannot be found. The option "--use_wandb" will result in error.')
+
 
 if __name__ == '__main__':
     opt = TestOptions().parse()  # get test options
@@ -46,6 +51,11 @@ if __name__ == '__main__':
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     train_dataset = create_dataset(util.copyconf(opt, phase="train"))
     model = create_model(opt)      # create a model given opt.model and other options
+    # initialize logger
+    if opt.use_wandb:
+        wandb_run = wandb.init(project='CUT-and-FastCUT', name=opt.name, config=opt) if not wandb.run else wandb.run
+        wandb_run._label(repo='CUT-and-FastCUT')
+
     # create a webpage for viewing the results
     web_dir = os.path.join(opt.results_dir, opt.name, '{}_{}'.format(opt.phase, opt.epoch))  # define the website directory
     print('creating web directory', web_dir)
@@ -66,5 +76,5 @@ if __name__ == '__main__':
         img_path = model.get_image_paths()     # get image paths
         if i % 5 == 0:  # save images to an HTML file
             print('processing (%04d)-th image... %s' % (i, img_path))
-        save_images(webpage, visuals, img_path, width=opt.display_winsize)
+        save_images(webpage, visuals, img_path, width=opt.display_winsize, use_wandb=opt.use_wandb)
     webpage.save()  # save the HTML
